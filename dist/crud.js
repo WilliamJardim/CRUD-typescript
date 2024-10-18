@@ -77,7 +77,8 @@ app.get('/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* 
 // Função para atualizar um usuário
 app.put('/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { name, email } = req.body;
+    const { name, email } = req.query;
+    console.log(id, name, email);
     try {
         const connection = yield connect();
         const [result] = yield connection.execute('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, id]);

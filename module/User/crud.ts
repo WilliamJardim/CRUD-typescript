@@ -72,7 +72,10 @@ app.get('/users/:id', async (req, res) => {
 // Função para atualizar um usuário
 app.put('/users/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, email } = req.body;
+    const { name, email } = req.query;
+
+    console.log(id, name, email)
+
     try {
         const connection = await connect();
         const [result] = await connection.execute<ResultSetHeader>('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, id]);
