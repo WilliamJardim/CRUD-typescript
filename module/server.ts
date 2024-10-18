@@ -1,5 +1,4 @@
 const express = require('express');
-const mysql2 = require('mysql2/promise');
 import { Application } from 'express';
 import InitCRUDS from './cruds';
 
