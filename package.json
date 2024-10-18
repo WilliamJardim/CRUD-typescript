@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": ".\\node_modules\\.bin\\tsc.cmd",
-    "dev": ".\\node_modules\\.bin\\tsc.cmd && node .\\dist\\crud.js"
+    "dev": ".\\node_modules\\.bin\\tsc.cmd && node .\\dist\\server.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/WilliamJardim/CRUD-typescript#readme",
   "dependencies": {
+    "@types/express": "^5.0.0",
     "@types/mysql": "^2.15.26",
     "@types/node": "^22.7.6",
     "express": "^4.21.1",
