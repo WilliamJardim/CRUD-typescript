@@ -1,0 +1,28 @@
+{
+  "name": "crud-typescript",
+  "version": "1.0.0",
+  "description": "A CRUD made in TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": ".\\node_modules\\.bin\\tsc.cmd",
+    "dev": ".\\node_modules\\.bin\\tsc-node.cmd .\\src\\User\\crud.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WilliamJardim/CRUD-typescript.git"
+  },
+  "author": "William Alves Jardim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WilliamJardim/CRUD-typescript/issues"
+  },
+  "homepage": "https://github.com/WilliamJardim/CRUD-typescript#readme",
+  "dependencies": {
+    "@types/mysql": "^2.15.26",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}

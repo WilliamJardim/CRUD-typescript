@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+      "moduleResolution": "node",  // Corrige a resolução de módulos Node.js
+      "outDir": "./dist/",
+      "target": "ES2015",
+      "noEmitOnError": false
+  },
+  "exclude": [
+      "node_modules"
+  ]
+}
