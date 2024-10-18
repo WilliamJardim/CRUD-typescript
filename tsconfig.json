@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+      "module": "commonjs",
       "moduleResolution": "node",  // Corrige a resolução de módulos Node.js
       "outDir": "./dist/",
       "target": "ES2015",

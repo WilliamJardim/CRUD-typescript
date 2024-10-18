@@ -1,79 +1,108 @@
-const mysql2 = require('mysql2/promise'); // Use mysql2/promise para usar a versão com Promises
-import {Connection} from 'mysql2/promise'; // Importe os tipos manualmente
+const express = require('express');
+const mysql2 = require('mysql2/promise');
+import { Connection, RowDataPacket } from 'mysql2/promise';
+import { ResultSetHeader } from 'mysql2/promise';
+
+const app = express();
+app.use(express.json()); // Middleware para interpretar JSON
 
 // Configura a conexão com o banco de dados
 const connectionConfig = {
     host: 'localhost',
     user: 'root',
     password: 'root', // substitua pela sua senha
-    database: 'test_db'    // substitua pelo nome do seu banco de dados
+    database: 'crudtypescript'    // substitua pelo nome do seu banco de dados
 };
 
 // Função para conectar ao banco de dados
-async function connect(): Promise<Connection> {  // Usar Connection como o tipo de retorno
+async function connect(): Promise<Connection> {
     return await mysql2.createConnection(connectionConfig);
 }
 
-// Função para criar um registro
-async function createUser(name: string, email: string): Promise<void> {
-    const connection = await connect();
-    const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';
-    await connection.execute(sql, [name, email]);
-    await connection.end();
-    console.log('Usuário criado com sucesso!');
-}
+// Função para criar um usuário
+app.post('/users', async (req, res) => {
+    const { name, email } = req.body;
+    try {
+        const connection = await connect();
+        const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';
+        await connection.execute(sql, [name, email]);
+        await connection.end();
+        res.status(201).send('Usuário criado com sucesso!');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao criar o usuário.');
+    }
+});
 
-// Função para ler todos os registros
-async function readUsers(): Promise<void> {
-    const connection = await connect();
-    const [rows] = await connection.query('SELECT * FROM users');
-    console.log(rows);
-    await connection.end();
-}
+// Função para ler todos os usuários
+app.get('/users', async (req, res) => {
+    try {
+        const connection = await connect();
+        const [rows] = await connection.query('SELECT * FROM users');
+        await connection.end();
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao obter os usuários.');
+    }
+});
 
 // Função para ler um único registro pelo ID
-async function readUserById(id: number): Promise<void> {
-    const connection = await connect();
-    const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
-    console.log(rows);
-    await connection.end();
-}
+app.get('/users/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const connection = await connect();
+        const [rows] = await connection.query<RowDataPacket[]>('SELECT * FROM users WHERE id = ?', [id]);
+        await connection.end();
+        if (rows.length > 0) {  // rows terá a propriedade length agora
+            res.status(200).json(rows[0]);
+        } else {
+            res.status(404).send('Usuário não encontrado.');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao obter o usuário.');
+    }
+});
 
-// Função para atualizar um registro
-async function updateUser(id: number, name: string, email: string): Promise<void> {
-    const connection = await connect();
-    const sql = 'UPDATE users SET name = ?, email = ? WHERE id = ?';
-    await connection.execute(sql, [name, email, id]);
-    await connection.end();
-    console.log('Usuário atualizado com sucesso!');
-}
+// Função para atualizar um usuário
+app.put('/users/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, email } = req.body;
+    try {
+        const connection = await connect();
+        const [result] = await connection.execute<ResultSetHeader>('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, id]);
+        await connection.end();
+        if (result.affectedRows > 0) {
+            res.status(200).send('Usuário atualizado com sucesso!');
+        } else {
+            res.status(404).send('Usuário não encontrado.');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao atualizar o usuário.');
+    }
+});
 
-// Função para deletar um registro
-async function deleteUser(id: number): Promise<void> {
-    const connection = await connect();
-    const sql = 'DELETE FROM users WHERE id = ?';
-    await connection.execute(sql, [id]);
-    await connection.end();
-    console.log('Usuário deletado com sucesso!');
-}
+// Função para deletar um usuário
+app.delete('/users/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const connection = await connect();
+        const [result] = await connection.execute<ResultSetHeader>('DELETE FROM users WHERE id = ?', [id]);
+        await connection.end();
+        if (result.affectedRows > 0) {
+            res.status(200).send('Usuário deletado com sucesso!');
+        } else {
+            res.status(404).send('Usuário não encontrado.');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao deletar o usuário.');
+    }
+});
 
-// Exemplo de uso
-async function main() {
-    // Cria um usuário
-    await createUser('John Doe', 'john@example.com');
-    
-    // Lê todos os usuários
-    await readUsers();
-    
-    // Lê um usuário por ID
-    await readUserById(1);
-    
-    // Atualiza o usuário com ID 1
-    await updateUser(1, 'Jane Doe', 'jane@example.com');
-    
-    // Deleta o usuário com ID 1
-    await deleteUser(1);
-}
-
-// Executa a função principal
-main().catch(console.error);
+// Inicializa o servidor
+app.listen(3000, () => {
+    console.log('Servidor rodando em http://localhost:3000');
+});

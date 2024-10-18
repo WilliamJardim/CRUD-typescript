@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,13 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const mysql2 = require('mysql2/promise'); // Use mysql2/promise para usar a versão com Promises
+Object.defineProperty(exports, "__esModule", { value: true });
+const express = require('express');
+const mysql2 = require('mysql2/promise');
+const app = express();
+app.use(express.json()); // Middleware para interpretar JSON
 // Configura a conexão com o banco de dados
 const connectionConfig = {
     host: 'localhost',
     user: 'root',
-    password: 'password', // substitua pela sua senha
-    database: 'test_db' // substitua pelo nome do seu banco de dados
+    password: 'root', // substitua pela sua senha
+    database: 'crudtypescript' // substitua pelo nome do seu banco de dados
 };
 // Função para conectar ao banco de dados
 function connect() {
@@ -21,69 +26,93 @@ function connect() {
         return yield mysql2.createConnection(connectionConfig);
     });
 }
-// Função para criar um registro
-function createUser(name, email) {
-    return __awaiter(this, void 0, void 0, function* () {
+// Função para criar um usuário
+app.post('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, email } = req.body;
+    try {
         const connection = yield connect();
         const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';
         yield connection.execute(sql, [name, email]);
         yield connection.end();
-        console.log('Usuário criado com sucesso!');
-    });
-}
-// Função para ler todos os registros
-function readUsers() {
-    return __awaiter(this, void 0, void 0, function* () {
+        res.status(201).send('Usuário criado com sucesso!');
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao criar o usuário.');
+    }
+}));
+// Função para ler todos os usuários
+app.get('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const connection = yield connect();
         const [rows] = yield connection.query('SELECT * FROM users');
-        console.log(rows);
         yield connection.end();
-    });
-}
+        res.status(200).json(rows);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao obter os usuários.');
+    }
+}));
 // Função para ler um único registro pelo ID
-function readUserById(id) {
-    return __awaiter(this, void 0, void 0, function* () {
+app.get('/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
         const connection = yield connect();
         const [rows] = yield connection.query('SELECT * FROM users WHERE id = ?', [id]);
-        console.log(rows);
         yield connection.end();
-    });
-}
-// Função para atualizar um registro
-function updateUser(id, name, email) {
-    return __awaiter(this, void 0, void 0, function* () {
+        if (rows.length > 0) { // rows terá a propriedade length agora
+            res.status(200).json(rows[0]);
+        }
+        else {
+            res.status(404).send('Usuário não encontrado.');
+        }
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao obter o usuário.');
+    }
+}));
+// Função para atualizar um usuário
+app.put('/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { name, email } = req.body;
+    try {
         const connection = yield connect();
-        const sql = 'UPDATE users SET name = ?, email = ? WHERE id = ?';
-        yield connection.execute(sql, [name, email, id]);
+        const [result] = yield connection.execute('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, id]);
         yield connection.end();
-        console.log('Usuário atualizado com sucesso!');
-    });
-}
-// Função para deletar um registro
-function deleteUser(id) {
-    return __awaiter(this, void 0, void 0, function* () {
+        if (result.affectedRows > 0) {
+            res.status(200).send('Usuário atualizado com sucesso!');
+        }
+        else {
+            res.status(404).send('Usuário não encontrado.');
+        }
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao atualizar o usuário.');
+    }
+}));
+// Função para deletar um usuário
+app.delete('/users/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
         const connection = yield connect();
-        const sql = 'DELETE FROM users WHERE id = ?';
-        yield connection.execute(sql, [id]);
+        const [result] = yield connection.execute('DELETE FROM users WHERE id = ?', [id]);
         yield connection.end();
-        console.log('Usuário deletado com sucesso!');
-    });
-}
-// Exemplo de uso
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Cria um usuário
-        yield createUser('John Doe', 'john@example.com');
-        // Lê todos os usuários
-        yield readUsers();
-        // Lê um usuário por ID
-        yield readUserById(1);
-        // Atualiza o usuário com ID 1
-        yield updateUser(1, 'Jane Doe', 'jane@example.com');
-        // Deleta o usuário com ID 1
-        yield deleteUser(1);
-    });
-}
-// Executa a função principal
-main().catch(console.error);
-export {};
+        if (result.affectedRows > 0) {
+            res.status(200).send('Usuário deletado com sucesso!');
+        }
+        else {
+            res.status(404).send('Usuário não encontrado.');
+        }
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao deletar o usuário.');
+    }
+}));
+// Inicializa o servidor
+app.listen(3000, () => {
+    console.log('Servidor rodando em http://localhost:3000');
+});
