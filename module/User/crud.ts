@@ -21,10 +21,14 @@ async function connect(): Promise<Connection> {
 
 // Função para criar um usuário
 app.post('/users', async (req, res) => {
-    const { name, email } = req.body;
+    const { name, email } = req.query;
+    
     try {
         const connection = await connect();
         const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';
+        
+        console.log( name, email );
+
         await connection.execute(sql, [name, email]);
         await connection.end();
         res.status(201).send('Usuário criado com sucesso!');

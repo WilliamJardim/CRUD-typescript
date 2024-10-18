@@ -28,10 +28,11 @@ function connect() {
 }
 // Função para criar um usuário
 app.post('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, email } = req.body;
+    const { name, email } = req.query;
     try {
         const connection = yield connect();
         const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';
+        console.log(name, email);
         yield connection.execute(sql, [name, email]);
         yield connection.end();
         res.status(201).send('Usuário criado com sucesso!');
