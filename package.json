@@ -19,9 +19,11 @@
   },
   "homepage": "https://github.com/WilliamJardim/CRUD-typescript#readme",
   "dependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/mysql": "^2.15.26",
     "@types/node": "^22.7.6",
+    "cors": "^2.8.5",
     "express": "^4.21.1",
     "mysql2": "^3.11.3",
     "ts-node": "^10.9.2",

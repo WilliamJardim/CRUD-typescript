@@ -14,7 +14,8 @@ const mysql2 = require('mysql2/promise');
 function UserCRUD(app, connect) {
     // Função para criar um usuário
     app.post('/users', (req, res) => __awaiter(this, void 0, void 0, function* () {
-        const { name, email } = req.query;
+        const { name, email } = req.body;
+        console.log('Qq', req.body, name, email);
         try {
             const connection = yield connect();
             const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';

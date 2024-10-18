@@ -1,13 +1,14 @@
 const mysql2 = require('mysql2/promise');
 import { Application } from 'express';
+import e = require('express');
 import { Connection, RowDataPacket } from 'mysql2/promise';
 import { ResultSetHeader } from 'mysql2/promise';
 
 export default function UserCRUD( app:Application, connect: () => Promise<Connection>  ){
     // Função para criar um usuário
     app.post('/users', async (req, res) => {
-        const { name, email } = req.query;
-        
+        const { name, email } = req.body;
+    
         try {
             const connection = await connect();
             const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';
