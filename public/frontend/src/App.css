@@ -40,3 +40,17 @@
 .read-the-docs {
   color: #888;
 }
+
+td.btn-delete{
+  width: 200px;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  padding: 5px;
+}
+
+button.btn-delete{
+  width: 100%;
+  background-color: darkred;
+  border: solid 1px black;
+  border-radius: 16px;
+}

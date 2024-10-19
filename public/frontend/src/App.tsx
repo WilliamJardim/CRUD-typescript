@@ -1,5 +1,6 @@
 import { useEffect, useState, useTransition } from 'react'
 import './App.css'
+import { MdDelete } from "react-icons/md";
 
 function App() {
   const [name,  setName]  = useState('');
@@ -17,7 +18,6 @@ function App() {
   
     fetchUsers();
   }, [pesquisaUser]);
-
 
   function createNewUser(e:any): void{
     e.preventDefault();
@@ -60,6 +60,10 @@ function App() {
         });
   }
 
+  function onDeletarUsuario(e:any): void{
+    
+  }
+
   return (
     <>
       <h1> Create a new user </h1>
@@ -91,6 +95,12 @@ function App() {
                 return <tr>
                   <td> {userObj.name} </td>
                   <td> {userObj.email} </td>
+                  <td className='btn-delete'> 
+                      <button className='btn-delete' onClick={ onDeletarUsuario }>
+                         <MdDelete/> Delete
+                      </button> 
+                  </td>
+
                 </tr>
               })
             }
