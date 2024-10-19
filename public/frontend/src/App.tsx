@@ -61,6 +61,9 @@ function App() {
   }
 
   function onDeletarUsuario(e:any): void{
+    const botao:any    = e.target;
+    const indexUsuario:number = botao.indexUsuario;
+
     
   }
 
@@ -93,12 +96,14 @@ function App() {
             {
               users.map(function(userObj: any, userIndex:number){
                 return <tr>
-                  <td className='coluna-name'>  {userObj.name}  </td>
-                  <td className='coluna-email'> {userObj.email} </td>
-                  <td className='btn-delete'> 
-                      <button className='btn-delete' onClick={ onDeletarUsuario }>
+                  <td className={ `coluna-nome  coluna-nome-${ userIndex }` }>  {userObj.name}  </td>
+                  <td className={ `coluna-email coluna-email-${ userIndex }` }> {userObj.email} </td>
+                  <td className={ `btn-delete` }>
+
+                      <button className={ `btn-delete btn-delete-${userIndex} btn-user-id${userObj.id}` } onClick={ onDeletarUsuario }>
                          <MdDelete/> Delete
                       </button> 
+
                   </td>
 
                 </tr>
