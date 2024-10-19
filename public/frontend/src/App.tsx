@@ -1,9 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import './App.css'
 
 function App() {
   const [name,  setName]  = useState('');
   const [email, setEmail] = useState('usarname@domain.com');
+
+  const [pesquisaUser, setPesquisaUser] = useState('');
+  const [users,        setUsers]        = useState([]);
+
+  useEffect(() => {
+    async function fetchUsers() {
+      const response = await fetch('http://localhost:3000/users');
+      const dadosUsuarios = await response.json();
+      setUsers(dadosUsuarios.filter( (usr:any)=>{ if( usr.name.toLowerCase().indexOf( pesquisaUser.toLowerCase() ) != -1 ){ return usr } } )); // Supondo que 'dadosUsuarios' seja um array
+    }
+  
+    fetchUsers();
+  }, [pesquisaUser]);
+
 
   function createNewUser(e:any): void{
     e.preventDefault();
@@ -63,16 +77,24 @@ function App() {
 
       <div className='part user-list'>
          <h1> List all users </h1>
+         
+         <input value={ pesquisaUser } onChange={ ( e:any )=>{ setPesquisaUser(e.target.value) } } placeholder='Pesquisar...'></input>
+
          <table>
             <tr>
               <td> Name </td>
               <td> Email </td>
             </tr>
 
-            <tr>
-              <td> Test </td>
-              <td> Test </td>
-            </tr>
+            {
+              users.map(function(userObj: any){
+                return <tr>
+                  <td> {userObj.name} </td>
+                  <td> {userObj.email} </td>
+                </tr>
+              })
+            }
+
          </table>
       </div>
     </>
