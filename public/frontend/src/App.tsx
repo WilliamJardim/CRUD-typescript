@@ -91,10 +91,10 @@ function App() {
             </tr>
 
             {
-              users.map(function(userObj: any){
+              users.map(function(userObj: any, userIndex:number){
                 return <tr>
-                  <td> {userObj.name} </td>
-                  <td> {userObj.email} </td>
+                  <td className='coluna-name'>  {userObj.name}  </td>
+                  <td className='coluna-email'> {userObj.email} </td>
                   <td className='btn-delete'> 
                       <button className='btn-delete' onClick={ onDeletarUsuario }>
                          <MdDelete/> Delete
